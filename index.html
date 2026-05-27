@@ -435,7 +435,10 @@
     }
 
     window.addEventListener("load", async function () {
-      await Clerk.load();
+      await Clerk.load({
+        afterSignInUrl: window.location.href,
+        afterSignUpUrl: window.location.href
+      });
 
       if (Clerk.user) {
         document.getElementById("sign-in-container").style.display = "none";
@@ -446,7 +449,10 @@
           window.location.reload();
         });
       } else {
-        Clerk.mountSignIn(document.getElementById("sign-in"));
+        Clerk.mountSignIn(document.getElementById("sign-in"), {
+          afterSignInUrl: window.location.href,
+          afterSignUpUrl: window.location.href
+        });
       }
     });
   </script>
