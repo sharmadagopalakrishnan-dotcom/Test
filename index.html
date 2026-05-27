@@ -306,8 +306,23 @@
 </head>
 <body>
 
-  <!-- Sign-in form (shown when not authenticated) -->
-  <div id="sign-in-container">
+  <!-- Email gate (shown first) -->
+  <div id="email-gate" style="text-align:center; max-width:400px; width:100%;">
+    <h2 style="font-weight:400; margin-bottom:8px;">Sign in</h2>
+    <p style="color:var(--muted); font-size:14px; margin-bottom:24px;">Enter your work email to continue</p>
+    <input type="email" id="gate-email" placeholder="you@pwc.com"
+      style="width:100%; padding:14px 16px; font-size:14px; border:1.5px solid var(--border); border-radius:8px; outline:none; font-family:'DM Sans',sans-serif;" />
+    <button id="gate-btn" onclick="checkEmail()"
+      style="width:100%; margin-top:12px; padding:14px; background:var(--orange); color:white; border:none; border-radius:8px; font-size:14px; cursor:pointer; font-family:'DM Sans',sans-serif;">
+      Continue
+    </button>
+    <p id="gate-error" style="color:#F4622A; font-size:13px; margin-top:12px; display:none;">
+      Access is restricted to @pwc.com accounts only.
+    </p>
+  </div>
+
+  <!-- Clerk sign-in (shown after email passes check) -->
+  <div id="sign-in-container" style="display:none;">
     <div id="sign-in"></div>
   </div>
 
@@ -434,24 +449,52 @@
       label.textContent = open ? 'About this tool' : 'Close';
     }
 
+    const APP_URL = "https://sharmadagopalakrishnan-dotcom.github.io/Test/";
+    const ALLOWED_DOMAIN = "@pwc.com";
+
+    function checkEmail() {
+      const email = document.getElementById("gate-email").value.trim().toLowerCase();
+      if (email.endsWith(ALLOWED_DOMAIN)) {
+        document.getElementById("email-gate").style.display = "none";
+        document.getElementById("sign-in-container").style.display = "flex";
+        Clerk.mountSignIn(document.getElementById("sign-in"), {
+          forceRedirectUrl: APP_URL
+        });
+      } else {
+        document.getElementById("gate-error").style.display = "block";
+      }
+    }
+
+    document.addEventListener("keydown", function(e) {
+      if (e.key === "Enter" && document.getElementById("email-gate").style.display !== "none") {
+        checkEmail();
+      }
+    });
+
     window.addEventListener("load", async function () {
       await Clerk.load({
-        afterSignInUrl: window.location.href,
-        afterSignUpUrl: window.location.href
+        afterSignInUrl: APP_URL,
+        afterSignUpUrl: APP_URL,
+        signInForceRedirectUrl: APP_URL,
+        signUpForceRedirectUrl: APP_URL
       });
 
       if (Clerk.user) {
+        const email = Clerk.user.primaryEmailAddress?.emailAddress || "";
+        if (!email.endsWith(ALLOWED_DOMAIN)) {
+          await Clerk.signOut();
+          document.getElementById("email-gate").style.display = "block";
+          document.getElementById("gate-error").style.display = "block";
+          return;
+        }
+
+        document.getElementById("email-gate").style.display = "none";
         document.getElementById("sign-in-container").style.display = "none";
         document.getElementById("main-content").style.display = "block";
 
         document.getElementById("sign-out-btn").addEventListener("click", async () => {
           await Clerk.signOut();
           window.location.reload();
-        });
-      } else {
-        Clerk.mountSignIn(document.getElementById("sign-in"), {
-          afterSignInUrl: window.location.href,
-          afterSignUpUrl: window.location.href
         });
       }
     });
