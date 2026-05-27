@@ -408,12 +408,15 @@
     }
 
     window.addEventListener("load", async function () {
-      await Clerk.load();
+      await Clerk.load({
+        afterSignInUrl: window.location.href,
+        afterSignUpUrl: window.location.href
+      });
 
       if (Clerk.user) {
         document.getElementById("main-content").style.display = "block";
       } else {
-        Clerk.redirectToSignIn({ redirectUrl: window.location.href });
+        Clerk.redirectToSignIn();
       }
     });
   </script>
