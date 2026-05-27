@@ -6,6 +6,12 @@
   <title>GPT Tokenizer</title>
   <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
   <script src="https://unpkg.com/gpt-tokenizer"></script>
+  <script
+    crossorigin="anonymous"
+    data-clerk-publishable-key="pk_test_Y3VkZGx5LXNwYXJyb3ctMjYuY2xlcmsuYWNjb3VudHMuZGV2JA"
+    src="https://cdn.jsdelivr.net/npm/@clerk/clerk-js@5/dist/clerk.browser.js"
+    type="text/javascript"
+  ></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -30,7 +36,6 @@
       padding: 60px 24px 80px;
     }
 
-    /* Header */
     header {
       text-align: center;
       margin-bottom: 48px;
@@ -68,9 +73,7 @@
       margin-bottom: 12px;
     }
 
-    h1 strong {
-      font-weight: 500;
-    }
+    h1 strong { font-weight: 500; }
 
     .subtitle {
       font-size: 15px;
@@ -81,13 +84,11 @@
       line-height: 1.6;
     }
 
-    /* Main card */
     .card {
       width: 100%;
       max-width: 680px;
     }
 
-    /* Textarea */
     .input-wrap {
       position: relative;
       margin-bottom: 24px;
@@ -109,15 +110,9 @@
       transition: border-color 0.2s;
     }
 
-    textarea:focus {
-      border-color: var(--orange);
-    }
+    textarea:focus { border-color: var(--orange); }
+    textarea::placeholder { color: #C8C8C4; }
 
-    textarea::placeholder {
-      color: #C8C8C4;
-    }
-
-    /* Stats bar */
     .stats {
       display: flex;
       justify-content: center;
@@ -128,14 +123,9 @@
       transition: opacity 0.3s, transform 0.3s;
     }
 
-    .stats.visible {
-      opacity: 1;
-      transform: translateY(0);
-    }
+    .stats.visible { opacity: 1; transform: translateY(0); }
 
-    .stat {
-      text-align: center;
-    }
+    .stat { text-align: center; }
 
     .stat-value {
       font-family: 'DM Mono', monospace;
@@ -159,7 +149,6 @@
       align-self: stretch;
     }
 
-    /* Token output */
     #output {
       line-height: 2.4;
       text-align: center;
@@ -178,9 +167,7 @@
       transition: transform 0.1s;
     }
 
-    .token:hover {
-      transform: translateY(-2px);
-    }
+    .token:hover { transform: translateY(-2px); }
 
     .token-id {
       display: block;
@@ -191,14 +178,12 @@
       font-family: 'DM Mono', monospace;
     }
 
-    /* Token colors — warm palette around orange */
     .tc-0 { background: #FFE4DA; }
     .tc-1 { background: #FFF3CC; }
     .tc-2 { background: #FFD9CC; }
     .tc-3 { background: #FFE8B3; }
     .tc-4 { background: #FCEEE0; }
 
-    /* Divider */
     .divider {
       width: 100%;
       height: 1px;
@@ -206,7 +191,6 @@
       margin: 36px 0;
     }
 
-    /* About button */
     .about-btn {
       display: flex;
       align-items: center;
@@ -225,16 +209,9 @@
       letter-spacing: 0.01em;
     }
 
-    .about-btn:hover {
-      border-color: var(--orange);
-      color: var(--orange);
-    }
+    .about-btn:hover { border-color: var(--orange); color: var(--orange); }
+    .about-btn .icon { font-size: 14px; }
 
-    .about-btn .icon {
-      font-size: 14px;
-    }
-
-    /* About panel */
     #about-panel {
       display: none;
       margin-top: 24px;
@@ -269,10 +246,7 @@
       color: #555;
     }
 
-    .source-list {
-      list-style: none;
-      margin-top: 4px;
-    }
+    .source-list { list-style: none; margin-top: 4px; }
 
     .source-list li {
       padding: 10px 0;
@@ -298,13 +272,8 @@
 
     .source-list a:hover { text-decoration: underline; }
 
-    .meta {
-      margin-top: 16px;
-      font-size: 12px;
-      color: var(--muted);
-    }
+    .meta { margin-top: 16px; font-size: 12px; color: var(--muted); }
 
-    /* Empty state */
     .empty-state {
       text-align: center;
       color: var(--border);
@@ -312,92 +281,217 @@
       font-family: 'DM Mono', monospace;
       padding: 12px 0;
     }
+
+    #email-gate {
+      text-align: center;
+      max-width: 400px;
+      width: 100%;
+    }
+
+    #email-gate input:focus { border-color: var(--orange); }
+
+    #sign-in-container {
+      display: none;
+      justify-content: center;
+      align-items: center;
+      min-height: 400px;
+    }
+
+    #restricted-message {
+      display: none;
+      text-align: center;
+      max-width: 400px;
+      width: 100%;
+    }
+
+    .sign-out-btn {
+      padding: 8px 20px;
+      border: 1.5px solid var(--border);
+      border-radius: 999px;
+      background: transparent;
+      cursor: pointer;
+      font-size: 13px;
+      color: var(--muted);
+      font-family: 'DM Sans', sans-serif;
+      transition: all 0.2s;
+    }
+
+    .sign-out-btn:hover { border-color: var(--orange); color: var(--orange); }
   </style>
 </head>
 <body>
 
-  <header>
-    <div class="wordmark">
-      <div class="dot"></div>
-      <span>GPT-4 Tokenizer</span>
-    </div>
-    <h1>See how <strong>language models</strong><br>read your text</h1>
-    <p class="subtitle">Each coloured block is one token — the unit GPT-4 actually processes. Numbers below are token IDs.</p>
-  </header>
-
-  <div class="card">
-
-    <div class="input-wrap">
-      <textarea id="input" placeholder="Type or paste any text here…" oninput="tokenize()"></textarea>
-    </div>
-
-    <div class="stats" id="stats">
-      <div class="stat">
-        <div class="stat-value" id="token-count">0</div>
-        <div class="stat-label">Tokens</div>
-      </div>
-      <div class="stat-divider"></div>
-      <div class="stat">
-        <div class="stat-value" id="char-count">0</div>
-        <div class="stat-label">Characters</div>
-      </div>
-      <div class="stat-divider"></div>
-      <div class="stat">
-        <div class="stat-value" id="ratio">—</div>
-        <div class="stat-label">Chars / Token</div>
-      </div>
-    </div>
-
-    <div id="output">
-      <div class="empty-state">tokens will appear here</div>
-    </div>
-
-    <div class="divider"></div>
-
-    <button class="about-btn" onclick="toggleAbout()">
-      <span class="icon">ℹ</span>
-      <span id="about-label">About this tool</span>
+  <!-- Step 1: Email gate -->
+  <div id="email-gate">
+    <h2 style="font-weight:400; margin-bottom:8px;">Sign in</h2>
+    <p style="color:var(--muted); font-size:14px; margin-bottom:24px;">Enter your work email to continue</p>
+    <input type="email" id="gate-email" placeholder="you@pwc.com"
+      style="width:100%; padding:14px 16px; font-size:14px; border:1.5px solid var(--border); border-radius:8px; outline:none; font-family:'DM Sans',sans-serif;" />
+    <button onclick="checkEmail()"
+      style="width:100%; margin-top:12px; padding:14px; background:var(--orange); color:white; border:none; border-radius:8px; font-size:14px; cursor:pointer; font-family:'DM Sans',sans-serif;">
+      Continue
     </button>
+  </div>
 
-    <div id="about-panel">
-      <h3>What is this?</h3>
-      <p>
-        This tool tokenizes text exactly as GPT-4 does, using the <strong>cl100k_base</strong> vocabulary
-        of ~100,000 tokens. It runs entirely in your browser — no data is sent anywhere.
-      </p>
-      <p style="margin-top:10px">
-        Tokenization is how language models read text: they don't see characters or words,
-        they see <em>tokens</em> — chunks determined by a Byte Pair Encoding (BPE) algorithm
-        trained on a large corpus of text.
-      </p>
+  <!-- Shown if email is NOT @pwc.com -->
+  <div id="restricted-message">
+    <div style="font-size:48px; margin-bottom:16px;">&#128274;</div>
+    <h2 style="font-weight:500; margin-bottom:8px; color:var(--orange);">Access Restricted</h2>
+    <p style="color:var(--muted); font-size:14px; line-height:1.6;">
+      This tool is only available to <strong>@pwc.com</strong> email addresses.<br>
+      Please use your PwC work email to sign in.
+    </p>
+    <button onclick="window.location.reload()"
+      style="margin-top:24px; padding:10px 24px; background:transparent; border:1.5px solid var(--border); border-radius:999px; font-size:13px; cursor:pointer; color:var(--muted); font-family:'DM Sans',sans-serif;">
+      Try again
+    </button>
+  </div>
 
-      <h3>Sources</h3>
-      <ul class="source-list">
-        <li>
-          <strong>gpt-tokenizer — JavaScript library used here</strong>
-          <a href="https://github.com/niieani/gpt-tokenizer" target="_blank">github.com/niieani/gpt-tokenizer</a>
-        </li>
-        <li>
-          <strong>npm package — version info &amp; changelog</strong>
-          <a href="https://www.npmjs.com/package/gpt-tokenizer" target="_blank">npmjs.com/package/gpt-tokenizer</a>
-        </li>
-        <li>
-          <strong>Live playground — official demo</strong>
-          <a href="https://gpt-tokenizer.dev" target="_blank">gpt-tokenizer.dev</a>
-        </li>
-        <li>
-          <strong>tiktoken — OpenAI's original Python tokenizer</strong>
-          <a href="https://github.com/openai/tiktoken" target="_blank">github.com/openai/tiktoken</a>
-        </li>
-      </ul>
+  <!-- Step 2: Clerk sign-in (only shown after @pwc.com check passes) -->
+  <div id="sign-in-container">
+    <div id="sign-in"></div>
+  </div>
 
-      <p class="meta">Author: Bazyli Brzoska &nbsp;·&nbsp; License: MIT</p>
+  <!-- Step 3: Main content (shown after Clerk authentication) -->
+  <div id="main-content" style="display: none;">
+
+    <header>
+      <div class="wordmark">
+        <div class="dot"></div>
+        <span>GPT-4 Tokenizer</span>
+      </div>
+      <h1>See how <strong>language models</strong><br>read your text</h1>
+      <p class="subtitle">Each coloured block is one token — the unit GPT-4 actually processes. Numbers below are token IDs.</p>
+    </header>
+
+    <div class="card">
+      <div class="input-wrap">
+        <textarea id="input" placeholder="Type or paste any text here…" oninput="tokenize()"></textarea>
+      </div>
+
+      <div class="stats" id="stats">
+        <div class="stat">
+          <div class="stat-value" id="token-count">0</div>
+          <div class="stat-label">Tokens</div>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat">
+          <div class="stat-value" id="char-count">0</div>
+          <div class="stat-label">Characters</div>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat">
+          <div class="stat-value" id="ratio">—</div>
+          <div class="stat-label">Chars / Token</div>
+        </div>
+      </div>
+
+      <div id="output">
+        <div class="empty-state">tokens will appear here</div>
+      </div>
+
+      <div class="divider"></div>
+
+      <button class="about-btn" onclick="toggleAbout()">
+        <span class="icon">ℹ</span>
+        <span id="about-label">About this tool</span>
+      </button>
+
+      <div id="about-panel">
+        <h3>What is this?</h3>
+        <p>
+          This tool tokenizes text exactly as GPT-4 does, using the <strong>cl100k_base</strong> vocabulary
+          of ~100,000 tokens. It runs entirely in your browser — no data is sent anywhere.
+        </p>
+        <p style="margin-top:10px">
+          Tokenization is how language models read text: they don't see characters or words,
+          they see <em>tokens</em> — chunks determined by a Byte Pair Encoding (BPE) algorithm
+          trained on a large corpus of text.
+        </p>
+
+        <h3>Sources</h3>
+        <ul class="source-list">
+          <li>
+            <strong>gpt-tokenizer — JavaScript library used here</strong>
+            <a href="https://github.com/niieani/gpt-tokenizer" target="_blank">github.com/niieani/gpt-tokenizer</a>
+          </li>
+          <li>
+            <strong>npm package — version info &amp; changelog</strong>
+            <a href="https://www.npmjs.com/package/gpt-tokenizer" target="_blank">npmjs.com/package/gpt-tokenizer</a>
+          </li>
+          <li>
+            <strong>Live playground — official demo</strong>
+            <a href="https://gpt-tokenizer.dev" target="_blank">gpt-tokenizer.dev</a>
+          </li>
+          <li>
+            <strong>tiktoken — OpenAI's original Python tokenizer</strong>
+            <a href="https://github.com/openai/tiktoken" target="_blank">github.com/openai/tiktoken</a>
+          </li>
+        </ul>
+
+        <p class="meta">Author: Bazyli Brzoska &nbsp;·&nbsp; License: MIT</p>
+      </div>
+    </div>
+
+    <div style="text-align:center; margin-top: 32px;">
+      <button class="sign-out-btn" id="sign-out-btn">Sign out</button>
     </div>
 
   </div>
 
   <script>
+    const APP_URL = "https://sharmadagopalakrishnan-dotcom.github.io/Test/";
+    const ALLOWED_DOMAIN = "@pwc.com";
     const colors = ['tc-0','tc-1','tc-2','tc-3','tc-4'];
+
+    // Step 1: Check email domain before showing Clerk
+    function checkEmail() {
+      const email = document.getElementById("gate-email").value.trim().toLowerCase();
+      if (email.endsWith(ALLOWED_DOMAIN)) {
+        document.getElementById("email-gate").style.display = "none";
+        document.getElementById("sign-in-container").style.display = "flex";
+        Clerk.mountSignIn(document.getElementById("sign-in"), {
+          forceRedirectUrl: APP_URL,
+          initialValues: { emailAddress: email }
+        });
+      } else {
+        document.getElementById("email-gate").style.display = "none";
+        document.getElementById("restricted-message").style.display = "block";
+      }
+    }
+
+    document.addEventListener("keydown", function(e) {
+      if (e.key === "Enter" && document.getElementById("email-gate").style.display !== "none") {
+        checkEmail();
+      }
+    });
+
+    // On page load: check if already signed in
+    window.addEventListener("load", async function () {
+      await Clerk.load({
+        signInForceRedirectUrl: APP_URL,
+        signUpForceRedirectUrl: APP_URL
+      });
+
+      if (Clerk.user) {
+        const email = Clerk.user.primaryEmailAddress?.emailAddress || "";
+        if (!email.endsWith(ALLOWED_DOMAIN)) {
+          await Clerk.signOut();
+          document.getElementById("email-gate").style.display = "none";
+          document.getElementById("restricted-message").style.display = "block";
+          return;
+        }
+
+        document.getElementById("email-gate").style.display = "none";
+        document.getElementById("sign-in-container").style.display = "none";
+        document.getElementById("main-content").style.display = "block";
+
+        document.getElementById("sign-out-btn").addEventListener("click", async () => {
+          await Clerk.signOut();
+          window.location.reload();
+        });
+      }
+    });
 
     function tokenize() {
       const text = document.getElementById('input').value;
