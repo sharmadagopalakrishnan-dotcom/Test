@@ -2,7 +2,6 @@
 <html lang="en">
 <head>
   <script
-    async
     crossorigin="anonymous"
     data-clerk-publishable-key="pk_test_Y3VkZGx5LXNwYXJyb3ctMjYuY2xlcmsuYWNjb3VudHMuZGV2JA"
     src="https://cdn.jsdelivr.net/npm/@clerk/clerk-js@5/dist/clerk.browser.js"
@@ -414,7 +413,7 @@
       if (Clerk.user) {
         document.getElementById("main-content").style.display = "block";
       } else {
-        Clerk.redirectToSignIn({ redirectUrl: 'https://sharmadagopalakrishnan-dotcom.github.io/Test/' });
+        Clerk.redirectToSignIn({ redirectUrl: window.location.href });
       }
     });
   </script>
